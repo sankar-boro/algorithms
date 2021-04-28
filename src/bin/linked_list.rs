@@ -49,16 +49,22 @@ impl LinkedList {
   }
 
   fn pop(&mut self) {
-    let head = self.head.clone();
+    let head = &self.head;
+    let mut new_head: Option<Rc<RefCell<Node>>> = None;
+
     match head {
         Some(head) => {
-          let node = head.as_ref().borrow_mut();
-          let next_node = node.next.clone();
-          self.head = next_node;
-          self.len -= 1;
+          let node = head.as_ref().borrow();
+          if let Some(node) = &node.next {
+            let a = Rc::clone(&node);
+            new_head = Some(a);
+          }
         }
         None => {}
     }
+
+    self.head = new_head;
+    self.len -= 1;
   }
 }
 
