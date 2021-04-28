@@ -1,52 +1,92 @@
+use std::{cell::{RefCell}, rc::Rc};
+
 #[derive(Debug, Clone)]
-struct User {
+struct Node {
   name: String,
-  next: Option<Box<User>>,
-}
-
-impl User {
-  fn new(name: String) -> Self {
-    Self {
-      name,
-      next: None,
-    }
-  }
-
-  fn append(&mut self, name: User) {
-    self.next = Some(Box::new(name));
-  }
+  next: Option<Rc<RefCell<Node>>>
 }
 
 #[derive(Debug)]
 struct LinkedList {
-  head: Option<Box<User>>,
-  tail: Option<Box<User>>,
-  node: Option<Box<User>>,
+  head: Option<Rc<RefCell<Node>>>,
+  tail: Option<Rc<RefCell<Node>>>,
   len: usize,
 }
 
 impl LinkedList {
-  fn new(user: User) -> Self {
-    let user = Some(Box::new(user));
-    LinkedList {
-      head: user.clone(),
-      tail: user.clone(),
-      node: user,
-      len: 1,
+  fn new() -> Self {
+    Self {
+      head: None,
+      tail: None,
+      len: 0,
     }
   }
 
-  fn push(&self, user: User) {
-    
+  fn push(&mut self, new_node: Rc<RefCell<Node>>) {
+      match &self.tail {
+          Some(node) => {
+              let mut node = node.as_ref().borrow_mut();
+              node.append_node(Rc::clone(&new_node));
+          }
+          None => {
+              self.head = Some(Rc::clone(&new_node));
+              self.tail = Some(new_node);
+              self.len += 1;
+              return;
+          }
+      }
+
+      self.tail = Some(new_node);    
+      self.len+=1;
   }
 
-  fn append(&self, user: User) {}
+  fn prepend(&mut self, new_node: Rc<RefCell<Node>>) {
+    let mut a = new_node.as_ref().borrow_mut();
+    a.next = self.head.clone();
+    let b = Rc::new(RefCell::new(a.clone()));
+    self.head = Some(b);
+    self.len += 1;
+  }
 
-  fn prepend(&self, user: User) {}
+  fn pop(&mut self) {
+    let head = self.head.clone();
+    match head {
+        Some(head) => {
+          let node = head.as_ref().borrow_mut();
+          let next_node = node.next.clone();
+          self.head = next_node;
+          self.len -= 1;
+        }
+        None => {}
+    }
+  }
 }
 
+impl Node {
+  fn new(name: &str) -> Self {
+    Self {
+      name: name.to_string(),
+      next: None
+    }
+  }
+
+  fn append_node(&mut self, node: Rc<RefCell<Node>>) {
+    self.next = Some(node);
+  }
+}
+
+
+
 fn main() {
-  let users = User::new(String::from("sankar"));
-  let ll = LinkedList::new(users);
+  let mut ll = LinkedList::new();
+  let node = Rc::new(RefCell::new(Node::new("sankar")));
+  ll.push(node);
+  let node = Rc::new(RefCell::new(Node::new("arun")));
+  ll.push(node);
+  let node = Rc::new(RefCell::new(Node::new("boro")));
+  ll.push(node);
+  let node = Rc::new(RefCell::new(Node::new("bipul")));
+  ll.prepend(node);
+  ll.pop();
   println!("{:?}", ll);
 }
