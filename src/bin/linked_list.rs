@@ -1,4 +1,4 @@
-#[allow(unused_variables)]
+#[allow(unused_variables, unused_assignments)]
 use std::{cell::{RefCell}, rc::Rc};
 
 #[derive(Debug, Clone)]
@@ -76,24 +76,49 @@ impl LinkedList {
   	}
 
 	fn pop_back(&mut self) {
-		let mut start_node: Option<Rc<RefCell<Node>>> = None;
-		let mut delete_node: Option<Rc<RefCell<Node>>> = None;
-
-		if let Some(x) = &self.head {
-			start_node = Some(Rc::clone(x));
+		if self.len == 1 {
+			self.head = None;
+			self.tail = None;
+			self.len = 0;
+			return;
 		}
 
-		'a: loop {
-			let mut temp: Option<Rc<RefCell<Node>>> = None;
+		let mut node: Option<Rc<RefCell<Node>>> = None;
 
-			match &start_node {
-				Some(a) => {
-					let clone_a = a.borrow_mut();
-					if clone_a.has_next() {
-						delete_node = Some(Rc::clone(a));
-						let n = clone_a.next();
-						temp = n;
+		// if has_next node has child node, then we want to remove the child node from this node.
+		// but if it does not have any, then we want to directly set this node as the tail of linked list.
+		let mut has_next: Option<Rc<RefCell<Node>>> = None;
+
+		if let Some(x) = &self.head {
+			// a node exists
+			node = Some(Rc::clone(x));
+			self.len -= 1;
+		} else {
+			// node not found. nothing to remove, return
+			return;
+		}
+
+		// If linked list length is greater then or equal to one, this loop and match condition will execute
+		'a: loop {
+			// next node at every loop should be None, because we haven't found any next node yet.
+			// let mut next_node: Option<Rc<RefCell<Node>>> = None;
+			
+			node = match &node {
+				Some(_node) => {
+					let this = _node.borrow_mut();
+					if this.has_next() {
+						// ok this node has a child, but the child may not have another child node.
+						// so we may want to remove the child of current node and therefore we need to set this 
+						// node wherein we can remove an element from.
+						has_next = Some(Rc::clone(_node));
+
+						// if this node has linked node, then set node to this.next
+						// remember, this is not parent node, this is child node of current node.
+						this.next()
 					} else {
+						// lets say this is the first element and we do not have next node
+						// from here we do not want to iter over next element, so we break from loop.
+						// we do not want to set anything as whatever needs to be set has aldready been done.
 						break 'a; 
 					}
 				}
@@ -101,17 +126,14 @@ impl LinkedList {
 					break 'a;
 				}
 			}
-
-			start_node = temp;
 		}
 
-		if let Some(x) = &delete_node {
+		if let Some(x) = &has_next {
 			let mut x = x.borrow_mut();
 			x.delete_next();
-			self.len -= 1;
 		}
 
-		self.tail = delete_node;
+		self.tail = has_next;
   	}
 }
 
@@ -160,10 +182,11 @@ fn main() {
   let node = Rc::new(RefCell::new(Node::new("arun")));
   ll.push_back(node);
   let node = Rc::new(RefCell::new(Node::new("boro")));
-  ll.push_back(node);
+  ll.push_front(node);
   let node = Rc::new(RefCell::new(Node::new("bipul")));
   ll.push_back(node);
-//   ll.pop_back();
+  ll.pop_back();
   println!("Head: {:?}", ll.head);
   println!("Tail: {:?}", ll.tail);
+  println!("Len: {}", ll.len);
 }
