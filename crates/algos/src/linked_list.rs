@@ -65,15 +65,24 @@ impl<T: Clone> LinkedList<T> {
     }
 }
 
-pub fn run() {
-    let mut list: LinkedList<i32> = LinkedList::new();
-    list.prepend(9);
-    list.prepend(11);
-    list.prepend(3);
+#[cfg(test)]
+mod tests {
 
-    list.append(5);
+    use super::LinkedList;
 
-    let data = list.get_values();
-    println!("{:?}", data);
+    #[test]
+    fn test_linked_list() {
 
+        let mut list: LinkedList<i32> = LinkedList::new();
+        list.prepend(9);
+        list.prepend(11);
+        list.prepend(3);
+
+        list.append(5);
+
+        let all_values = list.get_values();
+        let match_values = vec![3, 11, 9, 5];
+
+        assert_eq!(all_values, match_values);
+    }
 }

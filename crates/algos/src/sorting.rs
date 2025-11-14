@@ -320,14 +320,14 @@ mod tests {
     #[test]
     fn test_bubble_sort() {
         let mut data = vec![5, 2, 3, 1, 7, 8, 9];
-        let a = bubble_sort(&mut data);
+        bubble_sort(&mut data);
         assert_eq!(vec![1, 2, 3, 5, 7, 8, 9], data);
     }
 
     #[test]
     fn test_selection_sort() {
         let mut data = vec![5, 2, 3, 1, 7, 8, 9];
-        let a = selection_sort(&mut data);
+        selection_sort(&mut data);
         assert_eq!(vec![1, 2, 3, 5, 7, 8, 9], data);
     }
 
@@ -335,7 +335,7 @@ mod tests {
     #[test]
     fn test_insertion_sort() {
         let mut data = vec![5, 2, 3, 1, 7, 8, 9];
-        let a = selection_sort(&mut data);
+        selection_sort(&mut data);
         assert_eq!(vec![1, 2, 3, 5, 7, 8, 9], data);
     }
 }

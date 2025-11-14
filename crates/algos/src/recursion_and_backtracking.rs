@@ -19,13 +19,13 @@
 // ---
 
 // ### **Recursion vs Backtracking**
-// | Feature       | Recursion | Backtracking |
-// |--------------|----------|-------------|
-// | Definition   | A function calls itself to solve a problem | A trial-and-error method that explores all possibilities and backtracks when needed |
-// | Approach     | Solves smaller subproblems recursively | Tries a solution, backtracks if invalid, and explores alternatives |
-// | Base Case    | Necessary to stop infinite recursion | No fixed base case; stops when a solution is found or all options fail |
-// | Examples     | Fibonacci, Factorial, Merge Sort | Sudoku, N-Queens, Subset Generation |
-// | Efficiency   | Can lead to redundant calls (optimized using memoization) | Eliminates unnecessary calculations using pruning |
+// | Feature      | Recursion                                                   | Backtracking                                                                          |
+// |--------------|-------------------------------------------------------------|---------------------------------------------------------------------------------------|
+// | Definition   | A function calls itself to solve a problem                  | A trial-and-error method that explores all possibilities and backtracks when needed   |
+// | Approach     | Solves smaller subproblems recursively                      | Tries a solution, backtracks if invalid, and explores alternatives                    |
+// | Base Case    | Necessary to stop infinite recursion                        | No fixed base case; stops when a solution is found or all options fail                |
+// | Examples     | Fibonacci, Factorial, Merge Sort                            | Sudoku, N-Queens, Subset Generation                                                   |
+// | Efficiency   | Can lead to redundant calls (optimized using memoization)   | Eliminates unnecessary calculations using pruning                                     |
 pub fn generate_parentheses(n: usize, open: usize, close: usize, current: String, result: &mut Vec<String>) {
     if current.len() == n * 2 {
         result.push(current);
@@ -34,13 +34,17 @@ pub fn generate_parentheses(n: usize, open: usize, close: usize, current: String
 
     // Add '(' if we have remaining open brackets to use
     if open < n {
+        println!("Add open");
         generate_parentheses(n, open + 1, close, format!("{}(", current), result);
     }
 
     // Add ')' only if open > close to maintain validity
     if close < open {
+        println!("Add close");
         generate_parentheses(n, open, close + 1, format!("{})", current), result);
     }
+
+    println!("Open: {open}, Close: {close}, Current: {current}");
 }
 
 
@@ -119,5 +123,15 @@ pub fn print_solutions(solutions: &Vec<Vec<usize>>, n: usize) {
             let mut row = vec!['.'; n];
             row[col] = 'Q';
         }
+    }
+}
+
+// Generate parantheses
+// ["((()))", "(()())", "(())()", "()(())", "()()()"]
+
+fn backtrack_paran(curr: &mut String, len: usize, res: &mut Vec<String>) {
+    if curr.len() == len * 2 {
+        res.push(curr.clone());
+        return;
     }
 }
